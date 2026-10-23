@@ -1,33 +1,30 @@
-"""KiCad IPC action entrypoint for the part-marking plugin."""
+"""KiCad IPC action: add a Micro QR part marking to the open board."""
+
+import traceback
 
 from kipy import KiCad
-from kipy.errors import ConnectionError
 
-from part_marking.dialog import ask_marking_options, show_error
-from part_marking.generator import create_and_place
+import dialog
+import marking
 
 
 def main() -> None:
-    """Ask for part-marking settings, then create and place the marking."""
-    options = ask_marking_options()
+    try:
+        board = KiCad().get_board()
+    except Exception as exc:
+        traceback.print_exc()
+        dialog.show_error("Can't connect to KiCad", f"{type(exc).__name__}: {exc}")
+        return
+
+    options = dialog.ask_options()
     if options is None:
         return
 
     try:
-        kicad = KiCad()
-        board = kicad.get_board()
-    except ConnectionError as exc:
-        show_error("KiCad connection failed", str(exc))
-        return
-
-    try:
-        placed = create_and_place(board, options)
+        marking.place_marking(board, options)
     except Exception as exc:
-        show_error("Could not create part marking", str(exc))
-        return
-
-    if not placed:
-        print("Unplaced QR part marking discarded.")
+        traceback.print_exc()
+        dialog.show_error("Could not create part marking", f"{type(exc).__name__}: {exc}")
 
 
 if __name__ == "__main__":

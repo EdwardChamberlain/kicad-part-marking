@@ -1,0 +1,19 @@
+{
+  "$schema": "https://go.kicad.org/pcm/schemas/v2",
+  "name": "KiCad Part Marking",
+  "description": "Create a native Micro QR part marking on copper and solder mask.",
+  "description_full": "Generates a Micro QR code on the selected solder-mask layer over a solid copper backing with rounded corners. The code and backing are grouped and placed interactively.",
+  "identifier": "org.edward.kicad.part-marking",
+  "type": "plugin",
+  "author": {"name": "Edward Chamberlain", "contact": {}},
+  "license": "GPL-3.0",
+  "resources": {},
+  "versions": [
+    {
+      "version": "0.2.0",
+      "status": "testing",
+      "kicad_version": "10.0",
+      "runtime": "ipc"
+    }
+  ]
+}
