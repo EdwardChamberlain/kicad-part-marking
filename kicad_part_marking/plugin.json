@@ -1,0 +1,22 @@
+{
+  "$schema": "https://go.kicad.org/api/schemas/v1",
+  "identifier": "org.edward.kicad.part-marking",
+  "name": "Part Marking",
+  "description": "Standardise PCB part marking with QR codes",
+  "runtime": {
+    "type": "python",
+    "min_version": "3.9"
+  },
+  "actions": [
+    {
+      "identifier": "generate-part-marking",
+      "name": "Generate Part Marking",
+      "description": "Generate standardised QR part marking for the board",
+      "show-button": true,
+      "scopes": ["pcb"],
+      "entrypoint": "main.py",
+      "icons-light": ["icon-24.png"],
+      "icons-dark": ["icon-24.png"]
+    }
+  ]
+}

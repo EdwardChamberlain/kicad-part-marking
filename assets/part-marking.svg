@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect x="2" y="2" width="60" height="60" rx="13" fill="#cf8730"/>
+  <rect x="8" y="8" width="48" height="48" rx="8" fill="#fffdf8"/>
+  <g fill="#17243a" shape-rendering="crispEdges">
+    <!-- Micro QR finder -->
+    <path d="M14 14h20v20H14z M18 18v12h12V18z" fill-rule="evenodd"/>
+    <path d="M22 22h4v4h-4z"/>
+    <!-- Data modules -->
+    <path d="M38 14h4v4h-4z M46 14h4v4h-4z M38 18h8v4h-8z M50 18h4v4h-4z
+             M38 26h4v4h-4z M46 26h4v4h-4z M54 26h2v4h-2z M34 34h4v4h-4z
+             M42 34h8v4h-8z M14 38h4v4h-4z M22 38h4v4h-4z M30 38h8v4h-8z
+             M42 42h4v4h-4z M50 42h6v4h-6z M14 46h8v4h-8z M26 46h4v4h-4z
+             M34 46h4v4h-4z M42 50h8v4h-8z M54 50h2v4h-2z"/>
+  </g>
+</svg>
