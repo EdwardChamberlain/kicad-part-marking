@@ -49,7 +49,7 @@ def resolve_build_version() -> tuple[str, str, str, bool]:
     commit = run_git("rev-parse", "--short=8", "HEAD") or "unknown"
     exact_tags = run_git("tag", "--points-at", "HEAD") or ""
     matching = sorted(
-        (match.group(1), tag)
+        (".".join(match.groups()), tag)
         for tag in exact_tags.splitlines()
         if (match := VERSION_PATTERN.fullmatch(tag)) is not None
     )
@@ -72,7 +72,7 @@ def resolve_build_version() -> tuple[str, str, str, bool]:
         "v[0-9]*.[0-9]*.[0-9]*",
     )
     nearest_match = VERSION_PATTERN.fullmatch(nearest or "")
-    version = nearest_match.group(1) if nearest_match else fallback
+    version = ".".join(nearest_match.groups()) if nearest_match else fallback
     return version, "testing", commit, False
 
 
