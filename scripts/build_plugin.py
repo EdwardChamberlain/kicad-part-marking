@@ -14,6 +14,8 @@ import generate_icons
 ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_DIR = ROOT / "kicad_part_marking"
 PCM_DIR = ROOT / "pcm"
+# Only the plugin's own files: skips caches, egg-info and other local leftovers.
+PLUGIN_SUFFIXES = {".py", ".json", ".txt", ".png"}
 
 
 def main() -> None:
@@ -24,8 +26,8 @@ def main() -> None:
     output.parent.mkdir(exist_ok=True)
 
     with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
-        for path in sorted(PLUGIN_DIR.rglob("*")):
-            if path.is_file() and "__pycache__" not in path.parts:
+        for path in sorted(PLUGIN_DIR.iterdir()):
+            if path.is_file() and path.suffix in PLUGIN_SUFFIXES:
                 archive.write(path, f"plugins/{path.relative_to(PLUGIN_DIR).as_posix()}")
         archive.write(PCM_DIR / "icon.png", "resources/icon.png")
         archive.write(PCM_DIR / "metadata.json", "metadata.json")
