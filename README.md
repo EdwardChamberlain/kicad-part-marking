@@ -15,7 +15,7 @@ Click **Generate Part Marking** in the PCB Editor toolbar and enter:
 
 - **Marking size**: the overall square in mm, including a 0.1 mm copper
   border on each edge.
-- **Side**: Top or Bottom.
+- **Side**: Front or Back.
 - **Code text**: up to 35 digits, 21 upper-case characters
   (A–Z, 0–9, space, `$%*+-./:`), or 15 bytes of other text.
 
@@ -29,11 +29,14 @@ No install is needed. With the board open in KiCad's PCB Editor:
 ```sh
 python -m venv .venv
 .venv/bin/pip install -r kicad_part_marking/requirements.txt
-.venv/bin/python kicad_part_marking/main.py --text "PN-1234 R2" --size 5 --side top
+.venv/bin/python kicad_part_marking/main.py
 ```
 
-Passing `--text` skips the dialog. Without it, the Tk dialog opens, which
-needs a Python with Tk (Homebrew Python needs `brew install python-tk`).
+That opens the settings dialog. To skip it, pass the settings instead:
+
+```sh
+.venv/bin/python kicad_part_marking/main.py --text "PN-1234 R2" --size 5 --side front
+```
 
 ## Files
 
@@ -41,7 +44,7 @@ needs a Python with Tk (Homebrew Python needs `brew install python-tk`).
 kicad_part_marking/   the plugin folder KiCad loads
   plugin.json         action definition
   main.py             entrypoint
-  dialog.py           settings dialog (Tk)
+  dialog.py           settings dialog (PySide6 / Qt)
   marking.py          builds and places the marking
 pcm/                  PCM package metadata and icon
 scripts/build_plugin.py
@@ -53,7 +56,8 @@ tests/
 Install by symlinking `kicad_part_marking/` into KiCad's plugins folder
 (macOS and Windows: `~/Documents/KiCad/10.0/plugins/`, Linux:
 `~/.local/share/KiCad/10.0/plugins/`). KiCad installs `requirements.txt` into
-the plugin's own Python environment the first time it loads.
+the plugin's own Python environment the first time it loads. That includes
+PySide6 for the dialog, roughly a 100 MB download, so the first run is slow.
 
 Run the tests (no KiCad needed):
 

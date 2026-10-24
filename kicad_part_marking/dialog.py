@@ -1,70 +1,108 @@
-"""Tk dialogs for the part-marking settings and errors."""
+"""Qt dialogs for the part-marking settings and errors.
+
+Laid out like KiCad's own dialogs: label / field / units rows, native
+OK/Cancel buttons bottom right, and the platform's native style so it
+follows light and dark mode the way KiCad does.
+"""
 
 from __future__ import annotations
 
-import tkinter as tk
-from tkinter import messagebox, ttk
+from pathlib import Path
 from typing import Optional
+
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import (
+    QApplication,
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QGridLayout,
+    QLabel,
+    QLineEdit,
+    QMessageBox,
+    QVBoxLayout,
+)
 
 from marking import BORDER_MM, LAYERS, MarkingOptions, parse_options
 
+ICON = Path(__file__).with_name("icon-24.png")
 
-def _new_root(title: str) -> tk.Tk:
-    root = tk.Tk()
-    root.title(title)
-    # KiCad launches the plugin as a separate process, so bring the window to the front.
-    root.lift()
-    root.attributes("-topmost", True)
-    root.after_idle(root.attributes, "-topmost", False)
-    return root
+
+def _app() -> QApplication:
+    app = QApplication.instance() or QApplication([])
+    app.setWindowIcon(QIcon(str(ICON)))
+    return app
+
+
+def _bring_to_front(widget) -> None:
+    # KiCad starts the plugin as a separate process, so the window can open behind KiCad.
+    widget.show()
+    widget.raise_()
+    widget.activateWindow()
+
+
+class MarkingDialog(QDialog):
+    def __init__(self) -> None:
+        super().__init__()
+        self.setWindowTitle("Generate Part Marking")
+        self.options: Optional[MarkingOptions] = None
+
+        self.size_edit = QLineEdit("5")
+        self.side_combo = QComboBox()
+        self.side_combo.addItems(list(LAYERS))
+        self.text_edit = QLineEdit()
+        self.text_edit.setPlaceholderText("e.g. PN-1234 R2")
+        self.text_edit.setMinimumWidth(240)
+
+        grid = QGridLayout()
+        grid.setColumnStretch(1, 1)
+        grid.addWidget(QLabel("Code text:"), 0, 0)
+        grid.addWidget(self.text_edit, 0, 1, 1, 2)
+        grid.addWidget(QLabel("Size:"), 1, 0)
+        grid.addWidget(self.size_edit, 1, 1)
+        grid.addWidget(QLabel("mm"), 1, 2)
+        grid.addWidget(QLabel("Side:"), 2, 0)
+        grid.addWidget(self.side_combo, 2, 1, 1, 2)
+
+        note = QLabel(f"Size is the overall square, including a {BORDER_MM:g} mm copper border.")
+        note.setEnabled(False)  # greyed, like KiCad's help text
+
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+
+        layout = QVBoxLayout(self)
+        layout.addLayout(grid)
+        layout.addWidget(note)
+        layout.addSpacing(6)
+        layout.addWidget(buttons)
+        self.setFixedSize(self.sizeHint())
+        self.text_edit.setFocus()
+
+    def accept(self) -> None:
+        try:
+            self.options = parse_options(
+                self.size_edit.text().strip(),
+                self.side_combo.currentText(),
+                self.text_edit.text().strip(),
+            )
+        except ValueError as exc:
+            QMessageBox.warning(self, "Generate Part Marking", str(exc))
+            return
+        super().accept()
 
 
 def ask_options() -> Optional[MarkingOptions]:
     """Show the settings dialog. Returns None if the user cancels."""
-    root = _new_root("Generate Part Marking")
-    root.resizable(False, False)
-    frame = ttk.Frame(root, padding=14)
-    frame.grid()
-
-    side_var = tk.StringVar(value="5.0")
-    board_side_var = tk.StringVar(value="Top")
-    text_var = tk.StringVar()
-    result: list = [None]
-
-    def row(label: str, widget: tk.Widget, line: int) -> None:
-        ttk.Label(frame, text=label).grid(row=line, column=0, sticky="w", padx=(0, 12), pady=5)
-        widget.grid(row=line, column=1, sticky="ew", pady=5)
-
-    row("Marking size (mm)", ttk.Entry(frame, textvariable=side_var, width=18), 0)
-    ttk.Label(frame, text=f"Overall square, including {BORDER_MM:g} mm copper border.").grid(
-        row=1, column=1, sticky="w"
-    )
-    row("Side", ttk.Combobox(frame, textvariable=board_side_var, values=list(LAYERS), state="readonly"), 2)
-    text_entry = ttk.Entry(frame, textvariable=text_var, width=38)
-    row("Code text", text_entry, 3)
-
-    def accept(_event=None) -> None:
-        try:
-            result[0] = parse_options(side_var.get().strip(), board_side_var.get(), text_var.get().strip())
-        except ValueError as exc:
-            messagebox.showerror("Invalid setting", str(exc), parent=root)
-            return
-        root.destroy()
-
-    buttons = ttk.Frame(frame)
-    buttons.grid(row=4, column=0, columnspan=2, sticky="e", pady=(12, 0))
-    ttk.Button(buttons, text="Cancel", command=root.destroy).grid(row=0, column=0, padx=(0, 7))
-    ttk.Button(buttons, text="Generate", command=accept).grid(row=0, column=1)
-    root.bind("<Return>", accept)
-    root.bind("<Escape>", lambda _event: root.destroy())
-
-    text_entry.focus_force()
-    root.mainloop()
-    return result[0]
+    _app()
+    dialog = MarkingDialog()
+    _bring_to_front(dialog)
+    dialog.exec()
+    return dialog.options
 
 
 def show_error(title: str, message: str) -> None:
-    root = _new_root(title)
-    root.withdraw()
-    messagebox.showerror(title, message, parent=root)
-    root.destroy()
+    _app()
+    box = QMessageBox(QMessageBox.Icon.Critical, title, message)
+    _bring_to_front(box)
+    box.exec()

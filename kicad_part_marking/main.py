@@ -3,7 +3,7 @@
 Run with no arguments (as KiCad does) to get a settings dialog, or pass the
 settings on the command line to skip it:
 
-    python main.py --text "PN-1234 R2" --size 5 --side top
+    python main.py --text "PN-1234 R2" --size 5 --side front
 """
 
 import argparse
@@ -16,11 +16,20 @@ from kipy import KiCad
 import marking
 
 
+# KiCad says Front/Back; top/bottom are accepted too.
+_SIDES = {"front": "Front", "back": "Back", "top": "Front", "bottom": "Back"}
+
+
 def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Add a Micro QR part marking to the open board.")
     parser.add_argument("--text", help="text to encode; giving this skips the dialog")
     parser.add_argument("--size", default="5", help="overall marking size in mm (default: 5)")
-    parser.add_argument("--side", default="top", choices=["top", "bottom"], help="board side (default: top)")
+    parser.add_argument(
+        "--side",
+        default="front",
+        choices=list(_SIDES),
+        help="board side: front or back (default: front)",
+    )
     return parser.parse_args(argv)
 
 
@@ -41,14 +50,15 @@ def main(argv: Optional[List[str]] = None) -> int:
             import dialog
         except ImportError:
             print(
-                "This Python has no Tk, so the settings dialog can't open.\n"
-                "Pass the settings instead, e.g. --text \"PN-1234\" --size 5 --side top",
+                "PySide6 isn't installed, so the settings dialog can't open.\n"
+                "Install kicad_part_marking/requirements.txt, or pass the settings instead,\n"
+                "e.g. --text \"PN-1234\" --size 5 --side front",
                 file=sys.stderr,
             )
             return 2
     else:
         try:
-            options = marking.parse_options(args.size, args.side.capitalize(), args.text.strip())
+            options = marking.parse_options(args.size, _SIDES[args.side], args.text.strip())
         except ValueError as exc:
             print(f"Invalid setting: {exc}", file=sys.stderr)
             return 2

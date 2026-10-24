@@ -30,19 +30,19 @@ class MainTests(unittest.TestCase):
     def test_cli_mode_places_without_dialog(self):
         with mock.patch.object(main, "KiCad") as kicad, \
                 mock.patch.object(main.marking, "place_marking") as place, \
-                mock.patch.dict(sys.modules, {"tkinter": None, "dialog": None}):
+                mock.patch.dict(sys.modules, {"PySide6": None, "dialog": None}):
             code, _ = run(["--text", "PN-1234", "--size", "4", "--side", "bottom"])
         self.assertEqual(code, 0)
         options = place.call_args.args[1]
-        self.assertEqual((options.side_mm, options.board_side, options.text), (4.0, "Bottom", "PN-1234"))
+        self.assertEqual((options.side_mm, options.board_side, options.text), (4.0, "Back", "PN-1234"))
         kicad.return_value.get_board.assert_called_once()
 
-    def test_missing_tk_gives_clear_message(self):
-        with mock.patch.dict(sys.modules, {"tkinter": None, "dialog": None}), \
+    def test_missing_pyside_gives_clear_message(self):
+        with mock.patch.dict(sys.modules, {"PySide6": None, "dialog": None}), \
                 mock.patch.object(main, "KiCad") as kicad:
             code, err = run([])
         self.assertEqual(code, 2)
-        self.assertIn("no Tk", err)
+        self.assertIn("PySide6 isn't installed", err)
         kicad.assert_not_called()
 
     def test_connection_failure_is_reported(self):

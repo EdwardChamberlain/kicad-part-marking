@@ -75,17 +75,17 @@ class FakeEdge:
 
 class ParseOptionsTests(unittest.TestCase):
     def test_valid(self):
-        options = marking.parse_options("5", "Bottom", "PN-1234 R2")
-        self.assertEqual(options, marking.MarkingOptions(5.0, "Bottom", "PN-1234 R2"))
+        options = marking.parse_options("5", "Back", "PN-1234 R2")
+        self.assertEqual(options, marking.MarkingOptions(5.0, "Back", "PN-1234 R2"))
 
     def test_rejects_bad_size(self):
         for value in ("", "abc", "0.2", "nan", "inf", "100"):
             with self.assertRaises(ValueError, msg=value):
-                marking.parse_options(value, "Top", "A")
+                marking.parse_options(value, "Front", "A")
 
     def test_rejects_empty_text(self):
         with self.assertRaises(ValueError):
-            marking.parse_options("5", "Top", "")
+            marking.parse_options("5", "Front", "")
 
     def test_capacity_limits(self):
         marking.check_capacity("1" * 35)
@@ -99,7 +99,7 @@ class ParseOptionsTests(unittest.TestCase):
 class BuildItemsTests(unittest.TestCase):
     def test_geometry_and_layers(self):
         center = Vector2.from_xy_mm(10, 20)
-        barcode, backing = marking.build_items(marking.MarkingOptions(5.0, "Top", "AB12"), center)
+        barcode, backing = marking.build_items(marking.MarkingOptions(5.0, "Front", "AB12"), center)
 
         self.assertEqual(barcode.kind, BarcodeKind.BK_MICRO_QR_CODE)
         self.assertEqual(barcode.layer, BoardLayer.BL_F_Mask)
@@ -114,7 +114,7 @@ class BuildItemsTests(unittest.TestCase):
         self.assertTrue(backing.attributes.fill.filled)
 
     def test_bottom_layers(self):
-        barcode, backing = marking.build_items(marking.MarkingOptions(3.0, "Bottom", "1"), Vector2())
+        barcode, backing = marking.build_items(marking.MarkingOptions(3.0, "Back", "1"), Vector2())
         self.assertEqual(barcode.layer, BoardLayer.BL_B_Mask)
         self.assertEqual(backing.layer, BoardLayer.BL_B_Cu)
 
@@ -122,7 +122,7 @@ class BuildItemsTests(unittest.TestCase):
 class PlaceMarkingTests(unittest.TestCase):
     def test_group_has_both_items_and_is_moved(self):
         board = FakeBoard(edges=[FakeEdge(0, 0, 100_000_000, 50_000_000)])
-        marking.place_marking(board, marking.MarkingOptions(5.0, "Top", "AB12"))
+        marking.place_marking(board, marking.MarkingOptions(5.0, "Front", "AB12"))
 
         groups = [i for i in board.committed.values() if isinstance(i, Group)]
         self.assertEqual(len(groups), 1)
@@ -134,7 +134,7 @@ class PlaceMarkingTests(unittest.TestCase):
 
     def test_no_board_outline_starts_at_origin(self):
         board = FakeBoard()
-        marking.place_marking(board, marking.MarkingOptions(5.0, "Top", "AB12"))
+        marking.place_marking(board, marking.MarkingOptions(5.0, "Front", "AB12"))
         barcode = next(i for i in board.committed.values() if isinstance(i, Barcode))
         self.assertEqual(barcode.position, Vector2.from_xy(0, 0))
 

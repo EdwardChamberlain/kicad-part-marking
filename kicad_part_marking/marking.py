@@ -29,8 +29,8 @@ MAX_SIDE_MM = 50.0
 
 # (copper layer, mask layer) for each board side.
 LAYERS = {
-    "Top": (BoardLayer.BL_F_Cu, BoardLayer.BL_F_Mask),
-    "Bottom": (BoardLayer.BL_B_Cu, BoardLayer.BL_B_Mask),
+    "Front": (BoardLayer.BL_F_Cu, BoardLayer.BL_F_Mask),
+    "Back": (BoardLayer.BL_B_Cu, BoardLayer.BL_B_Mask),
 }
 
 # Largest Micro QR (M4) at error-correction level L.
@@ -56,7 +56,7 @@ def parse_options(side_text: str, board_side: str, text: str) -> MarkingOptions:
     if not MIN_SIDE_MM <= side_mm <= MAX_SIDE_MM:
         raise ValueError(f"The marking size must be between {MIN_SIDE_MM:g} and {MAX_SIDE_MM:g} mm.")
     if board_side not in LAYERS:
-        raise ValueError("Choose Top or Bottom.")
+        raise ValueError("Choose Front or Back.")
     if not text:
         raise ValueError("Enter the text to encode.")
     check_capacity(text)

@@ -1,1 +1,2 @@
 kicad-python>=0.7.0
+PySide6-Essentials>=6.6,<7
