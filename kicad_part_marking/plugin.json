@@ -15,8 +15,8 @@
       "show-button": true,
       "scopes": ["pcb"],
       "entrypoint": "main.py",
-      "icons-light": ["icon-24.png"],
-      "icons-dark": ["icon-24.png"]
+      "icons-light": ["icon-24.png", "icon-48.png", "icon-64.png"],
+      "icons-dark": ["icon-24.png", "icon-48.png", "icon-64.png"]
     }
   ]
 }

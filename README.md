@@ -48,6 +48,7 @@ kicad_part_marking/   the plugin folder KiCad loads
   marking.py          builds and places the marking
 pcm/                  PCM package metadata and icon
 scripts/build_plugin.py
+scripts/generate_icons.py
 tests/
 ```
 
@@ -74,7 +75,14 @@ Errors are shown in a dialog and printed with a traceback to the console.
 Set the version and status (`testing` or `stable`) in `pcm/metadata.json`, then:
 
 ```sh
+pip install -r requirements-build.txt
 python scripts/build_plugin.py
 ```
 
 The ZIP is written to `dist/`.
+
+The build first regenerates the icons with `scripts/generate_icons.py`: a gold
+(ENIG) Micro QR code encoding "Hello PCB!" on green solder mask, at 24, 48 and
+64 px for the toolbar and 64 px for the package manager. Those sizes keep every
+module a whole number of pixels. The generated PNGs are committed so the plugin
+folder works without a build.

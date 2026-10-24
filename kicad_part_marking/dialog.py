@@ -25,7 +25,7 @@ from PySide6.QtWidgets import (
 
 from marking import BORDER_MM, LAYERS, MarkingOptions, parse_options
 
-ICON = Path(__file__).with_name("icon-24.png")
+ICON = Path(__file__).with_name("icon-64.png")
 
 
 def _app() -> QApplication:
