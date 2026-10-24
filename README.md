@@ -22,6 +22,19 @@ Click **Generate Part Marking** in the PCB Editor toolbar and enter:
 The marking appears at the centre of the board outline and follows the cursor;
 click to place it. Escape leaves it where it started; undo twice removes it (once for the group, once for the items).
 
+## Running from a terminal
+
+No install is needed. With the board open in KiCad's PCB Editor:
+
+```sh
+python -m venv .venv
+.venv/bin/pip install -r kicad_part_marking/requirements.txt
+.venv/bin/python kicad_part_marking/main.py --text "PN-1234 R2" --size 5 --side top
+```
+
+Passing `--text` skips the dialog. Without it, the Tk dialog opens, which
+needs a Python with Tk (Homebrew Python needs `brew install python-tk`).
+
 ## Files
 
 ```
