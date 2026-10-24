@@ -24,6 +24,9 @@ def main() -> None:
     version = metadata["versions"][0]["version"]
     output = ROOT / "dist" / f"kicad-part-marking-{version}-PCM.zip"
     output.parent.mkdir(exist_ok=True)
+    if output.exists():
+        print(f"Note: replacing an existing {version} build. KiCad treats a same-version"
+              " reinstall unreliably; bump the version in pcm/metadata.json for a new release.")
 
     with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
         for path in sorted(PLUGIN_DIR.iterdir()):
