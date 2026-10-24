@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-from marking import BORDER_MM, LAYERS, MarkingOptions, parse_options
+from marking import BORDER_MM, DEFAULT_SIZE_MM, LAYERS, MarkingOptions, parse_options
 
 ICON = Path(__file__).with_name("icon-64.png")
 
@@ -47,7 +47,7 @@ class MarkingDialog(QDialog):
         self.setWindowTitle("Generate Part Marking")
         self.options: Optional[MarkingOptions] = None
 
-        self.size_edit = QLineEdit("5")
+        self.size_edit = QLineEdit(f"{DEFAULT_SIZE_MM:g}")
         self.side_combo = QComboBox()
         self.side_combo.addItems(list(LAYERS))
         self.text_edit = QLineEdit()

@@ -24,6 +24,7 @@ from kipy.util.units import from_mm
 
 BORDER_MM = 0.1  # copper showing around the code on each edge
 CORNER_RADIUS_MM = 0.1
+DEFAULT_SIZE_MM = 3.0
 MIN_SIDE_MM = 1.0
 MAX_SIDE_MM = 50.0
 

@@ -35,7 +35,7 @@ python -m venv .venv
 That opens the settings dialog. To skip it, pass the settings instead:
 
 ```sh
-.venv/bin/python kicad_part_marking/main.py --text "PN-1234 R2" --size 5 --side front
+.venv/bin/python kicad_part_marking/main.py --text "PN-1234 R2" --size 3 --side front
 ```
 
 ## Files

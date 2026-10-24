@@ -45,6 +45,11 @@ class MainTests(unittest.TestCase):
         self.assertIn("PySide6 isn't installed", err)
         kicad.assert_not_called()
 
+    def test_default_size_is_3mm(self):
+        with mock.patch.object(main, "KiCad"), mock.patch.object(main.marking, "place_marking") as place:
+            run(["--text", "PN-1234"])
+        self.assertEqual(place.call_args.args[1].side_mm, 3.0)
+
     def test_connection_failure_is_reported(self):
         with mock.patch.object(main, "KiCad", side_effect=ConnectionError("no socket")):
             code, err = run(["--text", "PN-1234"])

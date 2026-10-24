@@ -20,7 +20,7 @@ class DialogTests(unittest.TestCase):
 
     def test_defaults(self):
         d = dialog.MarkingDialog()
-        self.assertEqual(d.size_edit.text(), "5")
+        self.assertEqual(d.size_edit.text(), "3")
         self.assertEqual(d.side_combo.currentText(), "Front")
         self.assertEqual([d.side_combo.itemText(i) for i in range(d.side_combo.count())], ["Front", "Back"])
 
